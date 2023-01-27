@@ -6,6 +6,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class Dispatcher implements Filter {
     @Override
@@ -13,18 +16,18 @@ public class Dispatcher implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-//        System.out.println("context path : " + request.getContextPath());
-//        System.out.println("uri path : " + request.getRequestURI());
-//        System.out.println("full url : " + request.getRequestURL());
-
-        String endPoint = request.getRequestURI().replaceAll(request.getContextPath(),"");
-//        System.out.println(endPoint);
+        String endPoint = request.getRequestURI().replaceAll(request.getContextPath(), "");
 
         UserController userController = new UserController();
-        if(endPoint.equals("/join")){
-            userController.join();
-        } else if (endPoint.equals("/login")){
-            userController.login();
+        Method[] methods = userController.getClass().getDeclaredMethods();
+        for (Method method : methods) {
+            if (endPoint.equals("/" + method.getName())) {
+                try {
+                    method.invoke(userController);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
