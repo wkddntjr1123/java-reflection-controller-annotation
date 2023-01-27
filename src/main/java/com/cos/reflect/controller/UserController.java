@@ -1,15 +1,21 @@
 package com.cos.reflect.controller;
 
+import com.cos.reflect.annotation.RequestMapping;
+
 public class UserController {
-    public void join(){
-        System.out.println("called join()");
+
+    @RequestMapping("/join")
+    public String join(){
+        return "/";
     }
 
-    public void login(){
-        System.out.println("called login()");
+    @RequestMapping("/login")
+    public String login(){
+        return "/";
     }
 
-    public void user(){
-        System.out.println("called user()");
+    @RequestMapping("/user")
+    public String user(){
+        return "/";
     }
 }
