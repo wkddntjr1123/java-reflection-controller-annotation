@@ -1,14 +1,14 @@
 package com.cos.reflect.filter;
 
+import com.cos.reflect.annotation.RequestMapping;
 import com.cos.reflect.controller.UserController;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public class Dispatcher implements Filter {
     @Override
@@ -21,12 +21,16 @@ public class Dispatcher implements Filter {
         UserController userController = new UserController();
         Method[] methods = userController.getClass().getDeclaredMethods();
         for (Method method : methods) {
-            if (endPoint.equals("/" + method.getName())) {
-                try {
-                    method.invoke(userController);
-                } catch (Exception e) {
+            RequestMapping annotation = method.getDeclaredAnnotation(RequestMapping.class);
+            if(annotation.value().equals(endPoint)){
+                try{
+                    String path = (String) method.invoke(userController);
+                    RequestDispatcher dis = request.getRequestDispatcher(path);
+                    dis.forward(request, response);
+                } catch (Exception e){
                     e.printStackTrace();
                 }
+                break;
             }
         }
     }
